@@ -1,0 +1,146 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="pt-br">
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <title>Document</title>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <style>
+        .chat{
+            height: 100%;
+            width: 500px;
+            background-color: azure;
+            position: absolute;
+            top: 0px;
+        }
+        .chat h1{
+            background-color: teal;
+            top: 0px;
+            margin: 0px;
+            color: #fff;
+            padding: 5px;
+        }
+        .text-center{
+            text-align: center;
+        }
+        .btn{
+            background-color: skyblue;
+            border: 1px solid turquoise;
+            border-radius: 3px;
+            color: #fff;
+            cursor: pointer;
+        }
+        .btn.btn-circle{
+            border-radius: 50%;
+            height: 40px;
+            width: 40px;
+        }
+        .btn.btn-green{
+            background-color: teal;
+            border: 1px solid palegreen;
+        }
+        ul{
+            padding: 0px;
+            overflow-y: auto;
+            display: block;
+            height: calc(100% - 120px);
+        }
+        li{
+            padding: 8px 10px;
+            margin: 10px 30px 5px 5px;
+            background-color: skyblue;
+            border-radius: 10px 10px 10px 0px;
+            color: #fff;
+            clear: both;
+            float: left;
+        }
+        li.msg_me{
+            margin: 10px 5px 5px 30px;
+            background-color: teal;
+            border-radius: 10px 0px 10px 10px;
+            clear: both;
+            float: right;
+        }
+        input.texto_msg{
+            padding: 0px 10px !important;
+            width: 85%;
+            min-height: 40px;
+            border-radius: 50px;
+            box-shadow: unset;
+            border: 1px solid skyblue;
+        }
+        input.texto_msg:focus{
+            outline: 0;
+            border-radius: 50px;
+            box-shadow: 0px 0px 5px turquoise;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat">
+        <h1 class="text-center">Chat node.js</h1>
+
+        <ul id="mensagens"></ul>
+
+        <form method="post" id="form" style="position: absolute; bottom: 10px; width: 500px;">
+            <div id="status"></div>
+            <input class="texto_msg" type="text" autocomplete="off" id="msg" placeholder="Digite uma mensagem" />
+            <button type="submit" class="btn btn-circle btn-green" style="font-size: 20px;">></button>
+        </form>
+    </div>
+    
+
+    <script>
+        $(function(){
+            const socket = io();
+            let login = ""
+
+            $("#form").submit(function(){
+                let msg = $("#msg").val();
+
+                if(login === ""){
+                    login = msg;
+                    $("#msg").keydown(function(){
+                        socket.emit("status", login + " está digitando...");
+                    });
+                }
+
+                socket.emit("chat msg", msg);
+                $("#msg").val("");
+
+
+                return false;
+            });
+
+            socket.on("chat msg", function(msg){
+                let msg_login = msg.split(":");
+                let cor_usuario = "";
+
+                let msg_nova = "";
+                for (let index = 1; index < msg_login.length; index++) {
+                    msg_nova += msg_login[index];
+                }
+
+                if(msg_login[0] == login){ // Checa se o usuario é o mesmo que acabou de entrar, e mudar o nome para VOCÊ
+                    msg_login[0] = "Você";
+                    cor_usuario = "class='msg_me'";
+                }
+
+                $("#mensagens").append($("<li " + cor_usuario + ">").html("<b>" + msg_login[0] + ":</b> " + msg_nova));
+                $("#mensagens").prop("scrollTop", $("#mensagens").prop("scrollHeight"));
+            });
+            
+
+            
+            $("#msg").keyup(function(){
+                socket.emit("status", "");
+            });
+            
+
+            socket.on("status", function(msg){
+                $("#status").html(msg);
+            });
+        });
+    </script>
+</body>
+</html>
