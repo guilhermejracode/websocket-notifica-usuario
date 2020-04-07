@@ -2,7 +2,7 @@ const express = require("express")();
 const http = require("http").Server(express);
 const serverSocket = require("socket.io")(http);
 
-const porta = 8000;
+const porta = process.env.PORT || 8000;
 
 http.listen(porta, function(){
 	console.log("Servidor iniciado em http://localhost:" + porta);
