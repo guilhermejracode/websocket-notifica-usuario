@@ -4,11 +4,19 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "comment": "O camando start é usado para padronizar a inicialização da aplicação, bastando executar npm start que o servidor é iniciado",
+    "start": "node index.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "client/server",
+    "chat",
+    "nodejs",
+    "javascript",
+    "websockets",
+    "socket.io"
+  ],
+  "author": "Guilherme Jose Resende Albuquerque",
+  "license": "MIT",
   "dependencies": {
     "express": "^4.17.1",
     "socket.io": "^2.3.0"
